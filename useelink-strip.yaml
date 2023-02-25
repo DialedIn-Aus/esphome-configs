@@ -9,11 +9,15 @@ esphome:
   name: ${unique_id}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: true
+  project:
+    name: "dialedin.useelink"
+    version: "0.0.1"
 
 esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: arduino
+
 
 # Enable logging
 logger:
