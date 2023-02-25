@@ -11,7 +11,7 @@ esphome:
   name_add_mac_suffix: true
   project:
     name: "dialedin.useelink"
-    version: "0.0.1"
+    version: "0.0.2"
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -30,6 +30,8 @@ ota:
 wifi:
   ap: {} # This spawns an AP with the device name and mac address with no password.
 
+esp32_improv:
+  authorizer: none
 
 captive_portal:
 
