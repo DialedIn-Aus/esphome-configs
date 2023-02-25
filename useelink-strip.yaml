@@ -1,0 +1,184 @@
+substitutions:
+  unique_id: useelink-strip
+  friendly_name: Useelink Strip
+  main_icon: power-socket-au
+  usb_icon: usb-port
+  default_state: RESTORE_DEFAULT_OFF
+
+esphome:
+  name: ${unique_id}
+  friendly_name: ${friendly_name}
+  name_add_mac_suffix: true
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+api:
+
+ota:
+
+
+wifi:
+  ap: {} # This spawns an AP with the device name and mac address with no password.
+
+
+captive_portal:
+
+dashboard_import:
+  package_import_url: github://DialedIn-Aus/esphome-configs/useelink-strip.yaml
+  
+switch:
+  - platform: gpio
+    name: "USB Power"
+    id: relay_usb
+    pin:
+      number: GPIO2
+    restore_mode: "${default_state}"
+    icon: "mdi:${usb_icon}"
+    on_turn_on:
+      - light.turn_on:
+          id: power_led
+    on_turn_off:
+      - script.execute: led_turn_off
+  
+  - platform: gpio
+    name: "Power 1"
+    id: relay1
+    pin:
+      number: GPIO10
+      inverted: true
+    restore_mode: "${default_state}"
+    icon: "mdi:${main_icon}"
+    on_turn_on:
+      - light.turn_on:
+          id: power_led
+    on_turn_off:
+      - script.execute: led_turn_off
+
+  - platform: gpio
+    name: "Power 2"
+    id: relay2
+    pin:
+      number: GPIO6
+      inverted: true
+    restore_mode: "${default_state}"
+    icon: "mdi:${main_icon}"
+    on_turn_on:
+      - light.turn_on:
+          id: power_led
+    on_turn_off:
+      - script.execute: led_turn_off
+
+  - platform: gpio
+    name: "Power 3"
+    id: relay3
+    pin:
+      number: GPIO5
+      inverted: true
+    restore_mode: "${default_state}"
+    icon: "mdi:${main_icon}"
+    on_turn_on:
+      - light.turn_on:
+          id: power_led
+    on_turn_off:
+      - script.execute: led_turn_off
+  - platform: gpio
+    name: "Power 4"
+    id: relay4
+    pin:
+      number: GPIO4
+      inverted: true
+    restore_mode: "${default_state}"
+    icon: "mdi:${main_icon}"
+    on_turn_on:
+      - light.turn_on:
+          id: power_led
+    on_turn_off:
+      - script.execute: led_turn_off
+
+  # Switch to restart strip
+  - platform: restart
+    name: "Restart"
+
+sensor:
+  # WiFi Signal Sensor
+  - platform: wifi_signal
+    name: "WiFi Status"
+    update_interval: 60s
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+
+light:
+  - platform: binary
+    name: "Power LED"
+    output: output_red
+    id: power_led
+
+output:
+  #Red LED GPIO20
+  - platform: gpio
+    id: output_red
+    pin:
+      number: GPIO8
+      inverted: true
+    #testing
+
+#status_led:
+#  pin: GPIO9
+
+script:
+  - id: led_turn_off
+    then:
+      if:
+        condition:
+          and:
+            - switch.is_off: relay1
+            - switch.is_off: relay2
+            - switch.is_off: relay3
+            - switch.is_off: relay4
+            - switch.is_off: relay_usb
+        then:
+          - light.turn_off:
+              id: power_led
+              transition_length: 0s
+
+binary_sensor:
+  # Push Button (Toggles All Relays When Pressed)
+  - platform: gpio
+    pin:
+      number: GPIO9
+      mode: INPUT_PULLUP
+      inverted: true
+    name: "Button"
+    on_press:
+      if:
+        condition:
+          light.is_on: power_led
+        then:
+          - switch.turn_off: relay1
+          - switch.turn_off: relay2
+          - switch.turn_off: relay3
+          - switch.turn_off: relay4
+          - switch.turn_off: relay_usb
+          - light.turn_off:
+              id: power_led
+              transition_length: 0s
+        else:
+          - switch.turn_on: relay1
+          - switch.turn_on: relay2
+          - switch.turn_on: relay3
+          - switch.turn_on: relay4
+          - switch.turn_on: relay_usb
+          - light.turn_on:
+              id: power_led
+              transition_length: 0s
+  - platform: status
+    name: "Server Status"
