@@ -9,14 +9,20 @@ esphome:
   name: ${unique_id}
   friendly_name: ${friendly_name}
   name_add_mac_suffix: true
+  platformio_options:
+    board_build.flash_mode: dio
   project:
     name: "dialedin.useelink"
-    version: "0.0.2"
+    version: "0.0.3"
 
 esp32:
   board: esp32-c3-devkitm-1
   framework:
-    type: arduino
+    type: esp-idf
+    version: recommended
+    sdkconfig_options:
+      CONFIG_BT_BLE_42_FEATURES_SUPPORTED: y
+
 
 
 # Enable logging
@@ -33,7 +39,7 @@ wifi:
 esp32_improv:
   authorizer: none
 
-captive_portal:
+#captive_portal:
 
 dashboard_import:
   package_import_url: github://DialedIn-Aus/esphome-configs/useelink-strip.yaml
