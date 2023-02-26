@@ -133,6 +133,7 @@ light:
     name: "Power LED"
     output: output_red
     id: power_led
+    disabled_by_default: true
 
 output:
   #Red LED GPIO20
@@ -170,6 +171,7 @@ binary_sensor:
       mode: INPUT_PULLUP
       inverted: true
     name: "Button"
+    disabled_by_default: true
     on_press:
       if:
         condition:
